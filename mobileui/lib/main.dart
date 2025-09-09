@@ -30,10 +30,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _sleepMode = false;
+  int _selectedIndex = 0;
 
   void _toggleSleepMode(bool value) {
     setState(() {
       _sleepMode = value;
+    });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
     });
   }
 
@@ -129,6 +136,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Top'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: '詳細'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: '設定'),
+        ],
       ),
     );
   }
