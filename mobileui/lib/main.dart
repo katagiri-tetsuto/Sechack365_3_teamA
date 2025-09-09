@@ -87,7 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 20),
             Row(
               children: [
-                Expanded(
+                Spacer(),
+                Container(
+                  width: 80,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
@@ -133,7 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-                Expanded(
+                Container(
+                  width: 80,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
@@ -156,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
+                Spacer(),
               ],
             ),
           ],
