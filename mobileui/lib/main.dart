@@ -29,6 +29,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _sleepMode = false;
+
+  void _toggleSleepMode(bool value) {
+    setState(() {
+      _sleepMode = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +62,69 @@ class _MyHomePageState extends State<MyHomePage> {
                 Icon(Icons.ac_unit),
                 SizedBox(width: 5),
                 Text('Cool'),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('快眠モード'),
+                Switch(value: _sleepMode, onChanged: _toggleSleepMode),
+                SizedBox(width: 20),
+                IconButton(
+                  icon: Icon(Icons.power_settings_new),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                      IconButton(icon: Icon(Icons.remove), onPressed: () {}),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Column(
+                          children: [
+                            Icon(Icons.local_fire_department),
+                            Text('暖房'),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Column(
+                          children: [Icon(Icons.water_drop), Text('除湿')],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Column(
+                          children: [Icon(Icons.ac_unit), Text('冷房')],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                      IconButton(icon: Icon(Icons.remove), onPressed: () {}),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
