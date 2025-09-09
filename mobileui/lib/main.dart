@@ -31,11 +31,80 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _sleepMode = false;
   int _selectedIndex = 0;
+  int _temperature = 25;
+  int _fanSpeed = 2; // 1-5段階
+  String _mode = 'Cool';
+  bool _powerOn = true;
+  int _powerConsumption = 500;
 
   void _toggleSleepMode(bool value) {
     setState(() {
       _sleepMode = value;
     });
+  }
+
+  void _togglePower() {
+    setState(() {
+      _powerOn = !_powerOn;
+      _powerConsumption = _powerOn ? 500 : 0;
+    });
+  }
+
+  void _increaseTemperature() {
+    setState(() {
+      if (_temperature < 30) {
+        _temperature++;
+        _updatePowerConsumption();
+      }
+    });
+  }
+
+  void _decreaseTemperature() {
+    setState(() {
+      if (_temperature > 16) {
+        _temperature--;
+        _updatePowerConsumption();
+      }
+    });
+  }
+
+  void _increaseFanSpeed() {
+    setState(() {
+      if (_fanSpeed < 5) {
+        _fanSpeed++;
+        _updatePowerConsumption();
+      }
+    });
+  }
+
+  void _decreaseFanSpeed() {
+    setState(() {
+      if (_fanSpeed > 1) {
+        _fanSpeed--;
+        _updatePowerConsumption();
+      }
+    });
+  }
+
+  void _changeMode(String mode) {
+    setState(() {
+      _mode = mode;
+      _updatePowerConsumption();
+    });
+  }
+
+  void _updatePowerConsumption() {
+    if (!_powerOn) {
+      _powerConsumption = 0;
+      return;
+    }
+
+    int basePower = 300;
+    int tempFactor = (_temperature - 20).abs() * 20;
+    int fanFactor = _fanSpeed * 30;
+    int modeFactor = _mode == '暖房' ? 100 : (_mode == '冷房' ? 80 : 40);
+
+    _powerConsumption = basePower + tempFactor + fanFactor + modeFactor;
   }
 
   void _onItemTapped(int index) {
@@ -60,15 +129,15 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Icon(Icons.thermostat),
                 SizedBox(width: 5),
-                Text('25°C'),
+                Text('${_temperature}°C'),
                 SizedBox(width: 15),
                 Icon(Icons.power),
                 SizedBox(width: 5),
-                Text('500W'),
+                Text('${_powerConsumption}W'),
                 SizedBox(width: 15),
                 Icon(Icons.ac_unit),
                 SizedBox(width: 5),
-                Text('Cool'),
+                Text(_mode),
               ],
             ),
             SizedBox(height: 20),
@@ -79,8 +148,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Switch(value: _sleepMode, onChanged: _toggleSleepMode),
                 SizedBox(width: 20),
                 IconButton(
-                  icon: Icon(Icons.power_settings_new),
-                  onPressed: () {},
+                  icon: Icon(
+                    Icons.power_settings_new,
+                    color: _powerOn ? Colors.green : Colors.red,
+                  ),
+                  onPressed: _togglePower,
                 ),
               ],
             ),
@@ -99,9 +171,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: _increaseTemperature,
+                        ),
                         Text('温度'),
-                        IconButton(icon: Icon(Icons.remove), onPressed: () {}),
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: _decreaseTemperature,
+                        ),
                       ],
                     ),
                   ),
@@ -110,7 +188,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _changeMode('暖房'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _mode == '暖房' ? Colors.orange : null,
+                        ),
                         child: Column(
                           children: [
                             Icon(Icons.local_fire_department),
@@ -120,14 +201,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _changeMode('除湿'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _mode == '除湿' ? Colors.blue : null,
+                        ),
                         child: Column(
                           children: [Icon(Icons.water_drop), Text('除湿')],
                         ),
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _changeMode('冷房'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _mode == '冷房'
+                              ? Colors.lightBlue
+                              : null,
+                        ),
                         child: Column(
                           children: [Icon(Icons.ac_unit), Text('冷房')],
                         ),
@@ -148,12 +237,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         IconButton(
                           icon: Icon(Icons.arrow_upward),
-                          onPressed: () {},
+                          onPressed: _increaseFanSpeed,
                         ),
-                        Text('風量'),
+                        Text('風量\n${_fanSpeed}'),
                         IconButton(
                           icon: Icon(Icons.arrow_downward),
-                          onPressed: () {},
+                          onPressed: _decreaseFanSpeed,
                         ),
                       ],
                     ),
