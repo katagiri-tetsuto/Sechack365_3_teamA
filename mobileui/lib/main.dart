@@ -87,12 +87,24 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 20),
             Row(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      IconButton(icon: Icon(Icons.add), onPressed: () {}),
-                      IconButton(icon: Icon(Icons.remove), onPressed: () {}),
-                    ],
+                SizedBox(
+                  width: 80,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                        Text('温度'),
+                        IconButton(icon: Icon(Icons.remove), onPressed: () {}),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
