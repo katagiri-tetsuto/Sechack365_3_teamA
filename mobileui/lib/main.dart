@@ -87,8 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(
-                  width: 80,
+                Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
@@ -97,8 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: EdgeInsets.all(8),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(icon: Icon(Icons.add), onPressed: () {}),
                         Text('温度'),
@@ -137,11 +134,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: Column(
-                    children: [
-                      IconButton(icon: Icon(Icons.add), onPressed: () {}),
-                      IconButton(icon: Icon(Icons.remove), onPressed: () {}),
-                    ],
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_upward),
+                          onPressed: () {},
+                        ),
+                        Text('風量'),
+                        IconButton(
+                          icon: Icon(Icons.arrow_downward),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
