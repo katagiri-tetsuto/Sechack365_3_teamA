@@ -125,19 +125,51 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Icon(Icons.thermostat),
-                SizedBox(width: 5),
-                Text('${_temperature}°C'),
-                SizedBox(width: 15),
-                Icon(Icons.power),
-                SizedBox(width: 5),
-                Text('${_powerConsumption}W'),
-                SizedBox(width: 15),
-                Icon(Icons.ac_unit),
-                SizedBox(width: 5),
-                Text(_mode),
+                // 温度表示（大きく）
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.thermostat, size: 40),
+                      SizedBox(height: 8),
+                      Text(
+                        '${_temperature}°C',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // 電力とモード（縦並び）
+                Column(
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.power),
+                        SizedBox(width: 5),
+                        Text('${_powerConsumption}W'),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.ac_unit),
+                        SizedBox(width: 5),
+                        Text(_mode),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 20),
