@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   int _temperature = 25;
   int _fanSpeed = 2; // 1-5段階
-  String _mode = 'Cool';
+  String _mode = '冷房';
   bool _powerOn = true;
   int _powerConsumption = 500;
   List<ReservationData> _reservations = [];
@@ -400,23 +400,27 @@ class _MyHomePageState extends State<MyHomePage> {
                     ListTile(
                       leading: Icon(Icons.ac_unit),
                       title: Text('運転モード'),
-                      subtitle: DropdownButton<String>(
-                        value: reservationMode,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            setDialogState(() {
-                              reservationMode = newValue;
-                            });
-                          }
-                        },
-                        items: ['冷房', '暖房', '除湿'].map<DropdownMenuItem<String>>(
-                          (String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
+                      subtitle: Container(
+                        width: double.infinity,
+                        child: DropdownButton<String>(
+                          value: reservationMode,
+                          isExpanded: true,
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setDialogState(() {
+                                reservationMode = newValue;
+                              });
+                            }
                           },
-                        ).toList(),
+                          items: ['冷房', '暖房', '除湿']
+                              .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              })
+                              .toList(),
+                        ),
                       ),
                     ),
                   ],
