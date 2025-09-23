@@ -588,16 +588,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 5),
 
             // 予約状態表示
             if (_reservations.isNotEmpty)
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.blue[200]!),
                 ),
                 child: Column(
@@ -605,43 +605,82 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.schedule, color: Colors.blue[700]),
-                        SizedBox(width: 8),
+                        Icon(Icons.schedule, color: Colors.blue[700], size: 16),
+                        SizedBox(width: 4),
                         Text(
                           '運転予約 (${_reservations.length}件)',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[700],
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Container(
-                      height: 120,
+                      height: 60,
                       child: ListView.builder(
                         itemCount: _reservations.length,
                         itemBuilder: (context, index) {
                           final reservation = _reservations[index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(vertical: 2),
-                            child: ListTile(
-                              dense: true,
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.blue[100],
-                                child: Text('${index + 1}'),
-                              ),
-                              title: Text(
-                                '${reservation.startTime.hour.toString().padLeft(2, '0')}:${reservation.startTime.minute.toString().padLeft(2, '0')} - ${reservation.endTime.hour.toString().padLeft(2, '0')}:${reservation.endTime.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                              subtitle: Text(
-                                '${reservation.mode} ${reservation.temperature}°C 風量${reservation.fanSpeed}',
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => _deleteReservation(index),
-                              ),
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 1),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.blue[100],
+                                  radius: 8,
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${reservation.startTime.hour.toString().padLeft(2, '0')}:${reservation.startTime.minute.toString().padLeft(2, '0')}-${reservation.endTime.hour.toString().padLeft(2, '0')}:${reservation.endTime.minute.toString().padLeft(2, '0')}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${reservation.mode} ${reservation.temperature}°C 風${reservation.fanSpeed}',
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => _deleteReservation(index),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                    size: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },
@@ -650,24 +689,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-            if (_reservations.isNotEmpty) SizedBox(height: 20),
+            if (_reservations.isNotEmpty) SizedBox(height: 5),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('快眠モード'),
-                Switch(value: _sleepMode, onChanged: _toggleSleepMode),
-                SizedBox(width: 20),
+                Text('快眠モード', style: TextStyle(fontSize: 12)),
+                Switch(
+                  value: _sleepMode,
+                  onChanged: _toggleSleepMode,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                SizedBox(width: 15),
                 IconButton(
                   icon: Icon(
                     Icons.power_settings_new,
                     color: _powerOn ? Colors.green : Colors.red,
+                    size: 24,
                   ),
                   onPressed: _togglePower,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Row(
               children: [
                 Spacer(),
@@ -762,30 +808,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 Spacer(),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 5),
 
             // 予約ボタン
             Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
               width: double.infinity,
-              height: 50,
+              height: 40,
               child: ElevatedButton.icon(
                 onPressed: _showReservationDialog,
-                icon: Icon(Icons.schedule),
+                icon: Icon(Icons.schedule, size: 16),
                 label: Text(
                   '運転予約',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 5),
           ],
         ),
       ),
