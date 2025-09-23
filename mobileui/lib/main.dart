@@ -4,6 +4,23 @@ void main() {
   runApp(const MyApp());
 }
 
+// 予約データクラス
+class ReservationData {
+  DateTime startTime;
+  DateTime endTime;
+  int temperature;
+  int fanSpeed;
+  String mode;
+
+  ReservationData({
+    required this.startTime,
+    required this.endTime,
+    required this.temperature,
+    required this.fanSpeed,
+    required this.mode,
+  });
+}
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -12,14 +29,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _reservationIdController = TextEditingController();
+  final TextEditingController _reservationIdController =
+      TextEditingController();
 
   void _login() {
     if (_reservationIdController.text.isNotEmpty) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyHomePage(title: 'Air Conditioner Remote'),
+          builder: (context) =>
+              const MyHomePage(title: 'Air Conditioner Remote'),
         ),
       );
     } else {
@@ -61,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // アプリ名
               Text(
                 '予約アプリ',
@@ -71,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // 予約ID入力フィールド
               Container(
                 decoration: BoxDecoration(
@@ -101,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-              
+
               // ログインボタン
               SizedBox(
                 width: double.infinity,
@@ -117,10 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: const Text(
                     'ログイン',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -170,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _mode = 'Cool';
   bool _powerOn = true;
   int _powerConsumption = 500;
+  List<ReservationData> _reservations = [];
 
   void _toggleSleepMode(bool value) {
     setState(() {
@@ -239,6 +256,226 @@ class _MyHomePageState extends State<MyHomePage> {
     int modeFactor = _mode == '暖房' ? 100 : (_mode == '冷房' ? 80 : 40);
 
     _powerConsumption = basePower + tempFactor + fanFactor + modeFactor;
+  }
+
+  void _showReservationDialog() {
+    DateTime startTime = DateTime.now().add(Duration(hours: 1));
+    DateTime endTime = DateTime.now().add(Duration(hours: 2));
+    int reservationTemp = _temperature;
+    int reservationFanSpeed = _fanSpeed;
+    String reservationMode = _mode;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.schedule,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(width: 8),
+                  Text('運転予約'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 開始時刻
+                    ListTile(
+                      leading: Icon(Icons.play_arrow),
+                      title: Text('開始時刻'),
+                      subtitle: Text(
+                        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}',
+                      ),
+                      onTap: () async {
+                        TimeOfDay? time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(startTime),
+                        );
+                        if (time != null) {
+                          setDialogState(() {
+                            startTime = DateTime(
+                              startTime.year,
+                              startTime.month,
+                              startTime.day,
+                              time.hour,
+                              time.minute,
+                            );
+                          });
+                        }
+                      },
+                    ),
+                    // 終了時刻
+                    ListTile(
+                      leading: Icon(Icons.stop),
+                      title: Text('終了時刻'),
+                      subtitle: Text(
+                        '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}',
+                      ),
+                      onTap: () async {
+                        TimeOfDay? time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(endTime),
+                        );
+                        if (time != null) {
+                          setDialogState(() {
+                            endTime = DateTime(
+                              endTime.year,
+                              endTime.month,
+                              endTime.day,
+                              time.hour,
+                              time.minute,
+                            );
+                          });
+                        }
+                      },
+                    ),
+                    Divider(),
+                    // 温度設定
+                    ListTile(
+                      leading: Icon(Icons.thermostat),
+                      title: Text('設定温度'),
+                      subtitle: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              if (reservationTemp > 16) {
+                                setDialogState(() {
+                                  reservationTemp--;
+                                });
+                              }
+                            },
+                          ),
+                          Text('${reservationTemp}°C'),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              if (reservationTemp < 30) {
+                                setDialogState(() {
+                                  reservationTemp++;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 風量設定
+                    ListTile(
+                      leading: Icon(Icons.air),
+                      title: Text('風量'),
+                      subtitle: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              if (reservationFanSpeed > 1) {
+                                setDialogState(() {
+                                  reservationFanSpeed--;
+                                });
+                              }
+                            },
+                          ),
+                          Text('$reservationFanSpeed'),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              if (reservationFanSpeed < 5) {
+                                setDialogState(() {
+                                  reservationFanSpeed++;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    // モード選択
+                    ListTile(
+                      leading: Icon(Icons.ac_unit),
+                      title: Text('運転モード'),
+                      subtitle: DropdownButton<String>(
+                        value: reservationMode,
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setDialogState(() {
+                              reservationMode = newValue;
+                            });
+                          }
+                        },
+                        items: ['冷房', '暖房', '除湿'].map<DropdownMenuItem<String>>(
+                          (String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('キャンセル'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (startTime.isBefore(endTime)) {
+                      setState(() {
+                        _reservations.add(
+                          ReservationData(
+                            startTime: startTime,
+                            endTime: endTime,
+                            temperature: reservationTemp,
+                            fanSpeed: reservationFanSpeed,
+                            mode: reservationMode,
+                          ),
+                        );
+                      });
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('予約を追加しました'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('終了時刻は開始時刻より後に設定してください'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text('予約追加'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _deleteReservation(int index) {
+    setState(() {
+      _reservations.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('予約を削除しました'), backgroundColor: Colors.orange),
+    );
   }
 
   void _onItemTapped(int index) {
@@ -348,6 +585,69 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             SizedBox(height: 20),
+
+            // 予約状態表示
+            if (_reservations.isNotEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue[200]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.schedule, color: Colors.blue[700]),
+                        SizedBox(width: 8),
+                        Text(
+                          '運転予約 (${_reservations.length}件)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      height: 120,
+                      child: ListView.builder(
+                        itemCount: _reservations.length,
+                        itemBuilder: (context, index) {
+                          final reservation = _reservations[index];
+                          return Card(
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            child: ListTile(
+                              dense: true,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue[100],
+                                child: Text('${index + 1}'),
+                              ),
+                              title: Text(
+                                '${reservation.startTime.hour.toString().padLeft(2, '0')}:${reservation.startTime.minute.toString().padLeft(2, '0')} - ${reservation.endTime.hour.toString().padLeft(2, '0')}:${reservation.endTime.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              subtitle: Text(
+                                '${reservation.mode} ${reservation.temperature}°C 風量${reservation.fanSpeed}',
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _deleteReservation(index),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_reservations.isNotEmpty) SizedBox(height: 20),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -458,6 +758,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 Spacer(),
               ],
             ),
+            SizedBox(height: 20),
+
+            // 予約ボタン
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: _showReservationDialog,
+                icon: Icon(Icons.schedule),
+                label: Text(
+                  '運転予約',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),
