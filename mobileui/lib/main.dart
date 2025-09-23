@@ -173,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
