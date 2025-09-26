@@ -1,0 +1,95 @@
+API仕様書
+概要
+Raspberry Pi上で動作する簡易リモートコントローラAPI。
+電源制御、温度設定変更、ルーム情報やデバイス設定情報を取得できる。
+
+---
+
+エンドポイント一覧
+ルート
+URL: /
+メソッド: GET
+概要: 動作確認用エンドポイント
+返却値:
+
+{
+  "status": "200",
+  "body": "This is test."
+}
+
+
+---
+
+電源制御
+URL: /control/power
+メソッド: GET
+概要: 電源の現在状態を返却（将来的にGPIO制御予定）
+返却値:
+
+{
+  "status": "200",
+  "body": "<now_power>"
+}
+
+
+※ <now_power> は True または False
+
+---
+
+温度アップ
+URL: /control/temperature/up
+メソッド: GET
+概要: 現在の設定温度を +1 して返却
+返却値:
+
+{
+  "status": "200",
+  "body": <now_temperature>
+}
+
+
+---
+
+温度ダウン
+URL: /control/temperature/down
+メソッド: GET
+概要: 現在の設定温度を -1 して返却
+返却値:
+
+{
+  "status": "200",
+  "body": <now_temperature>
+}
+
+
+---
+
+ルーム情報取得
+URL: /info/room
+メソッド: GET
+概要: ルーム番号・ユーザー名・温度・電源状態を返却
+返却値:
+
+{
+  "status": "200",
+  "room": "303",
+  "usr": "<usr_name>",
+  "temperature": <now_temperature>,
+  "power": <now_power>
+}
+
+
+---
+
+設定情報取得
+URL: /info/settings
+メソッド: GET
+概要: ハードウェアやIDの情報を返却
+返却値:
+
+{
+  "status": "200",
+  "id": "00001",
+  "Hard_name": "raspberrypi 3B",
+  "room": "303"
+}
