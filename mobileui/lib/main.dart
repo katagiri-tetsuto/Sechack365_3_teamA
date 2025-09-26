@@ -1,7 +1,69 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
+}
+
+// APIサービスクラス
+class ApiService {
+  static const String baseUrl = 'http://localhost:8000'; // 適切なURLに変更してください
+
+  // 温度アップAPI呼び出し
+  static Future<int?> temperatureUp() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/control/temperature/up'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['body'] as int;
+      }
+    } catch (e) {
+      print('Temperature up API error: $e');
+    }
+    return null;
+  }
+
+  // 温度ダウンAPI呼び出し
+  static Future<int?> temperatureDown() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/control/temperature/down'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['body'] as int;
+      }
+    } catch (e) {
+      print('Temperature down API error: $e');
+    }
+    return null;
+  }
+
+  // 電源状態取得
+  static Future<bool?> getPowerStatus() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/control/power'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['body'] as bool;
+      }
+    } catch (e) {
+      print('Power status API error: $e');
+    }
+    return null;
+  }
+
+  // ルーム情報取得
+  static Future<Map<String, dynamic>?> getRoomInfo() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/info/room'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+    } catch (e) {
+      print('Room info API error: $e');
+    }
+    return null;
+  }
 }
 
 // 予約データクラス
@@ -194,29 +256,106 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _togglePower() {
-    setState(() {
-      _powerOn = !_powerOn;
-      _powerConsumption = _powerOn ? 500 : 0;
-    });
+  void _togglePower() async {
+    try {
+      // まず現在の電源状態を切り替え
+      final newPowerState = !_powerOn;
+      
+      // API呼び出しを実行（具体的なON/OFFエンドポイントは仮定）
+      final response = await http.get(
+        Uri.parse('${ApiService.baseUrl}/control/power/${newPowerState ? "on" : "off"}')
+      );
+      
+      if (response.statusCode == 200) {
+        setState(() {
+          _powerOn = newPowerState;
+          _powerConsumption = _powerOn ? 500 : 0;
+        });
+      } else {
+        // API呼び出しが失敗した場合はローカル状態のみ更新
+        setState(() {
+          _powerOn = newPowerState;
+          _powerConsumption = _powerOn ? 500 : 0;
+        });
+      }
+    } catch (e) {
+      print('Power toggle error: $e');
+      // エラーの場合はローカル状態のみ更新
+      setState(() {
+        _powerOn = !_powerOn;
+        _powerConsumption = _powerOn ? 500 : 0;
+      });
+    }
   }
 
-  void _increaseTemperature() {
-    setState(() {
-      if (_temperature < 30) {
-        _temperature++;
-        _updatePowerConsumption();
+  // 初期データをサーバーから取得
+  void _loadInitialData() async {
+    try {
+      // ルーム情報取得
+      final roomInfo = await ApiService.getRoomInfo();
+      if (roomInfo != null && roomInfo['body'] != null) {
+        final roomData = roomInfo['body'];
+        setState(() {
+          _temperature = roomData['temperature'] ?? 25;
+          _powerOn = roomData['power'] ?? true;
+          _updatePowerConsumption();
+        });
       }
-    });
+      
+      // 電源状態を個別に取得
+      final powerStatus = await ApiService.getPowerStatus();
+      if (powerStatus != null) {
+        setState(() {
+          _powerOn = powerStatus;
+          _updatePowerConsumption();
+        });
+      }
+    } catch (e) {
+      print('Initial data load error: $e');
+      // エラーの場合はデフォルト値を使用
+    }
   }
 
-  void _decreaseTemperature() {
-    setState(() {
-      if (_temperature > 16) {
-        _temperature--;
-        _updatePowerConsumption();
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData(); // アプリ起動時に初期データを読み込み
+  }
+
+  void _increaseTemperature() async {
+    if (_temperature < 30) {
+      final newTemp = await ApiService.temperatureUp();
+      if (newTemp != null) {
+        setState(() {
+          _temperature = newTemp;
+          _updatePowerConsumption();
+        });
+      } else {
+        // API呼び出し失敗時はローカルで更新
+        setState(() {
+          _temperature++;
+          _updatePowerConsumption();
+        });
       }
-    });
+    }
+  }
+
+  void _decreaseTemperature() async {
+    if (_temperature > 16) {
+      final newTemp = await ApiService.temperatureDown();
+      if (newTemp != null) {
+        setState(() {
+          _temperature = newTemp;
+          _updatePowerConsumption();
+        });
+      } else {
+        // API呼び出し失敗時はローカルで更新
+        setState(() {
+          _temperature--;
+          _updatePowerConsumption();
+        });
+      }
+    }
   }
 
   void _increaseFanSpeed() {
