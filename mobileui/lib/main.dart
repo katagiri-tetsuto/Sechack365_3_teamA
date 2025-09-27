@@ -8,12 +8,14 @@ void main() {
 
 // APIサービスクラス
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000'; // 適切なURLに変更してください
+  static const String baseUrl =
+      'http://ectodermoidal-caryn-sanatory.ngrok-free.dev'; // 適切なURLに変更してください
 
   // 温度アップAPI呼び出し
   static Future<int?> temperatureUp() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/control/temperature/up'));
+      final response =
+          await http.get(Uri.parse('$baseUrl/control/temperature/up'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['body'] as int;
@@ -27,7 +29,8 @@ class ApiService {
   // 温度ダウンAPI呼び出し
   static Future<int?> temperatureDown() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/control/temperature/down'));
+      final response =
+          await http.get(Uri.parse('$baseUrl/control/temperature/down'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['body'] as int;
@@ -147,9 +150,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 '予約アプリ',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
               const SizedBox(height: 40),
 
@@ -260,12 +263,11 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       // まず現在の電源状態を切り替え
       final newPowerState = !_powerOn;
-      
+
       // API呼び出しを実行（具体的なON/OFFエンドポイントは仮定）
-      final response = await http.get(
-        Uri.parse('${ApiService.baseUrl}/control/power/${newPowerState ? "on" : "off"}')
-      );
-      
+      final response = await http.get(Uri.parse(
+          '${ApiService.baseUrl}/control/power/${newPowerState ? "on" : "off"}'));
+
       if (response.statusCode == 200) {
         setState(() {
           _powerOn = newPowerState;
@@ -301,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _updatePowerConsumption();
         });
       }
-      
+
       // 電源状態を個別に取得
       final powerStatus = await ApiService.getPowerStatus();
       if (powerStatus != null) {
@@ -553,12 +555,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                           items: ['冷房', '暖房', '除湿']
                               .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              })
-                              .toList(),
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
@@ -909,9 +910,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ElevatedButton(
                         onPressed: () => _changeMode('冷房'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _mode == '冷房'
-                              ? Colors.lightBlue
-                              : null,
+                          backgroundColor:
+                              _mode == '冷房' ? Colors.lightBlue : null,
                         ),
                         child: Column(
                           children: [Icon(Icons.ac_unit), Text('冷房')],

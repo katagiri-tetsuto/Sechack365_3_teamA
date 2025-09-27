@@ -23,14 +23,15 @@ URL: /
 電源制御
 URL: /control/power
 メソッド: GET
-概要: 電源の現在状態を返却（将来的にGPIO制御予定）
+
+概要: 電源の現在状態を返却・操作（将来的にGPIO制御予定）
+備考: 電源のON/OFF操作は、ON時もOFF時も必ず /control/power エンドポイントで行ってください。
 返却値:
 
 {
   "status": "200",
   "body": "<now_power>"
 }
-
 
 ※ <now_power> は True または False
 
@@ -39,7 +40,9 @@ URL: /control/power
 温度アップ
 URL: /control/temperature/up
 メソッド: GET
+
 概要: 現在の設定温度を +1 して返却
+備考: 設定温度の範囲は20°〜27°です。
 返却値:
 
 {
@@ -53,7 +56,9 @@ URL: /control/temperature/up
 温度ダウン
 URL: /control/temperature/down
 メソッド: GET
+
 概要: 現在の設定温度を -1 して返却
+備考: 設定温度の範囲は20°〜27°です。
 返却値:
 
 {
