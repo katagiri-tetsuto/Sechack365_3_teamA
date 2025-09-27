@@ -261,20 +261,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _togglePower() async {
     try {
-      // まず現在の電源状態を切り替え
-      final newPowerState = !_powerOn;
-
-      // API呼び出しを実行（具体的なON/OFFエンドポイントは仮定）
-      final response = await http.get(Uri.parse(
-          '${ApiService.baseUrl}/control/power/${newPowerState ? "on" : "off"}'));
+      // /control/power エンドポイントを使用して電源を切り替え
+      final response =
+          await http.get(Uri.parse('${ApiService.baseUrl}/control/power'));
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
         setState(() {
-          _powerOn = newPowerState;
+          _powerOn = data['body'] as bool;
           _powerConsumption = _powerOn ? 500 : 0;
         });
       } else {
         // API呼び出しが失敗した場合はローカル状態のみ更新
+        final newPowerState = !_powerOn;
         setState(() {
           _powerOn = newPowerState;
           _powerConsumption = _powerOn ? 500 : 0;
@@ -325,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _increaseTemperature() async {
-    if (_temperature < 30) {
+    if (_temperature < 27) {
       final newTemp = await ApiService.temperatureUp();
       if (newTemp != null) {
         setState(() {
@@ -343,7 +342,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _decreaseTemperature() async {
-    if (_temperature > 16) {
+    if (_temperature > 20) {
       final newTemp = await ApiService.temperatureDown();
       if (newTemp != null) {
         setState(() {
