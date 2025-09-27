@@ -14,8 +14,10 @@ class ApiService {
   // 温度アップAPI呼び出し
   static Future<int?> temperatureUp() async {
     try {
-      final response =
-          await http.get(Uri.parse('$baseUrl/control/temperature/up'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/control/temperature/up'),
+        headers: {'ngrok-skip-browser-warning': 'true'},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['body'] as int;
@@ -29,8 +31,10 @@ class ApiService {
   // 温度ダウンAPI呼び出し
   static Future<int?> temperatureDown() async {
     try {
-      final response =
-          await http.get(Uri.parse('$baseUrl/control/temperature/down'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/control/temperature/down'),
+        headers: {'ngrok-skip-browser-warning': 'true'},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['body'] as int;
@@ -44,7 +48,10 @@ class ApiService {
   // 電源状態取得
   static Future<bool?> getPowerStatus() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/control/power'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/control/power'),
+        headers: {'ngrok-skip-browser-warning': 'true'},
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['body'] as bool;
@@ -58,7 +65,10 @@ class ApiService {
   // ルーム情報取得
   static Future<Map<String, dynamic>?> getRoomInfo() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/info/room'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/info/room'),
+        headers: {'ngrok-skip-browser-warning': 'true'},
+      );
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -262,8 +272,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _togglePower() async {
     try {
       // /control/power エンドポイントを使用して電源を切り替え
-      final response =
-          await http.get(Uri.parse('${ApiService.baseUrl}/control/power'));
+      final response = await http.get(
+        Uri.parse('${ApiService.baseUrl}/control/power'),
+        headers: {'ngrok-skip-browser-warning': 'true'},
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -294,11 +306,12 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       // ルーム情報取得
       final roomInfo = await ApiService.getRoomInfo();
-      if (roomInfo != null && roomInfo['body'] != null) {
-        final roomData = roomInfo['body'];
+      if (roomInfo != null) {
         setState(() {
-          _temperature = roomData['temperature'] ?? 25;
-          _powerOn = roomData['power'] ?? true;
+          // APIレスポンスのタイポに対応（"temparature"）
+          _temperature =
+              roomInfo['temparature'] ?? roomInfo['temperature'] ?? 25;
+          _powerOn = roomInfo['power'] ?? true;
           _updatePowerConsumption();
         });
       }
