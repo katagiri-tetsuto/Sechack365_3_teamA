@@ -9,7 +9,7 @@ void main() {
 // APIサービスクラス
 class ApiService {
   static const String baseUrl =
-      'http://ectodermoidal-caryn-sanatory.ngrok-free.dev'; // 適切なURLに変更してください
+      'https://ectodermoidal-caryn-sanatory.ngrok-free.dev'; // 適切なURLに変更してください
 
   // 温度アップAPI呼び出し
   static Future<int?> temperatureUp() async {
